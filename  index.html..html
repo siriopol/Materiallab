@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MaterialLab V2</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;background:#f3f4f6;margin:0;color:#111827}
+main{max-width:760px;margin:auto;padding:24px 16px}
+h1{margin:0}.sub{color:#667085}
+.card{background:white;border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 3px 14px #0001}
+.slider{margin:16px 0}.top{display:flex;justify-content:space-between;font-weight:700}
+input{width:100%;accent-color:#111827}
+button{width:100%;padding:14px;border:0;border-radius:13px;background:#111827;color:white;font-size:16px;font-weight:700}
+.material{border:1px solid #e5e7eb;border-radius:15px;padding:14px;margin:10px 0}
+.material h3{margin:0 0 5px}.score{font-weight:800}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.stat{background:#f3f4f6;border-radius:9px;padding:7px;font-size:13px}
+</style>
+</head>
+<body>
+<main>
+<h1>MaterialLab 🧪</h1>
+<p class="sub">Encuentra materiales según las propiedades que necesitas.</p>
+
+<div class="card">
+<div class="slider"><div class="top"><span>Elasticidad</span><span id="ev">8</span></div><input id="e" type="range" min="0" max="10" value="8"></div>
+<div class="slider"><div class="top"><span>Resistencia</span><span id="rv">8</span></div><input id="r" type="range" min="0" max="10" value="8"></div>
+<div class="slider"><div class="top"><span>Precio económico</span><span id="pv">7</span></div><input id="p" type="range" min="0" max="10" value="7"></div>
+<div class="slider"><div class="top"><span>Dureza</span><span id="hv">6</span></div><input id="h" type="range" min="0" max="10" value="6"></div>
+<div class="slider"><div class="top"><span>Resistencia al agua</span><span id="wv">9</span></div><input id="w" type="range" min="0" max="10" value="9"></div>
+<button onclick="buscar()">Buscar materiales</button>
+</div>
+
+<div class="card">
+<h2>Materiales</h2>
+<div id="lista"></div>
+</div>
+</main>
+
+<script>
+const materiales=[
+["Silicona",10,7,6,4,10,"Muy elástica y prácticamente impermeable."],
+["TPU",9,9,7,6,9,"Muy buen equilibrio entre elasticidad y resistencia."],
+["Caucho EPDM",8,8,8,5,10,"Resiste muy bien agua y condiciones exteriores."],
+["Polietileno (PE)",5,8,9,5,10,"Barato, resistente y con excelente resistencia al agua."],
+["Policarbonato",2,9,5,8,9,"Muy resistente y duro, pero poco elástico."],
+["Nailon",6,8,6,7,5,"Resistente y duro, aunque absorbe más humedad."]
+];
+
+const ids=["e","r","p","h","w"];
+ids.forEach(id=>document.getElementById(id).oninput=()=>{
+ document.getElementById(id+"v").textContent=document.getElementById(id).value;
+});
+function buscar(){
+ const t=ids.map(id=>+document.getElementById(id).value);
+ const res=materiales.map(m=>{
+   let d=0;
+   for(let i=0;i<5;i++) d+=Math.abs(m[i+1]-t[i]);
+   return {...m,score:Math.max(0,100-d*2)};
+ }).sort((a,b)=>b.score-a.score);
+ document.getElementById("lista").innerHTML=res.map((m,i)=>`
+ <div class="material">
+   <div style="display:flex;justify-content:space-between">
+     <h3>${i+1}. ${m[0]}</h3><span class="score">${Math.round(m.score)}%</span>
+   </div>
+   <div>${m[6]}</div>
+   <div class="grid">
+    <div class="stat">Elasticidad: ${m[1]}/10</div>
+    <div class="stat">Resistencia: ${m[2]}/10</div>
+    <div class="stat">Precio: ${m[3]}/10</div>
+    <div class="stat">Dureza: ${m[4]}/10</div>
+    <div class="stat">Agua: ${m[5]}/10</div>
+   </div>
+ </div>`).join("");
+}
+buscar();
+</script>
+</body>
+</html>
